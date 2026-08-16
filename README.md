@@ -40,7 +40,7 @@ parity — that's just data, not infringement.
 1. **Supabase project**
    - Create a free project at supabase.com.
    - In the SQL editor, run `supabase/schema.sql`.
-   - In Database → Replication, confirm the `games` table has Realtime enabled
+   - In Database → Replication, confirm the `splendor_games` table has Realtime enabled
      (the script also does this via `alter publication`).
    - Copy your Project URL and anon public key.
 
@@ -64,7 +64,7 @@ parity — that's just data, not infringement.
 
 ## Notes on the RLS policy
 
-`schema.sql` sets fully open read/write policies on the `games` table — fine
+`schema.sql` sets fully open read/write policies on the `splendor_games` table — fine
 for an unlisted, personal-use room-code app, since guessing a random 5-char
 code is the only "auth." If you ever make this public-facing, tighten this
 (e.g. require Supabase Auth and scope rows to authenticated participants).

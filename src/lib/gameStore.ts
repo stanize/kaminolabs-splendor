@@ -15,7 +15,7 @@ export async function createRoom(hostName: string) {
   const state = createGame(roomCode, [hostName]);
   state.status = "lobby";
   const { data, error } = await supabase
-    .from("games")
+    .from("splendor_games")
     .insert({ room_code: roomCode, state })
     .select()
     .single();
@@ -25,7 +25,7 @@ export async function createRoom(hostName: string) {
 
 export async function joinRoom(roomCode: string, playerName: string) {
   const { data: row, error } = await supabase
-    .from("games")
+    .from("splendor_games")
     .select("*")
     .eq("room_code", roomCode.toUpperCase())
     .single();
@@ -47,7 +47,7 @@ export async function joinRoom(roomCode: string, playerName: string) {
   });
 
   const { data, error: updateError } = await supabase
-    .from("games")
+    .from("splendor_games")
     .update({ state })
     .eq("id", row.id)
     .select()
@@ -58,7 +58,7 @@ export async function joinRoom(roomCode: string, playerName: string) {
 
 export async function startGame(roomCode: string) {
   const { data: row, error } = await supabase
-    .from("games")
+    .from("splendor_games")
     .select("*")
     .eq("room_code", roomCode.toUpperCase())
     .single();
@@ -72,7 +72,7 @@ export async function startGame(roomCode: string) {
   fresh.status = "in_progress";
 
   const { data, error: updateError } = await supabase
-    .from("games")
+    .from("splendor_games")
     .update({ state: fresh })
     .eq("id", row.id)
     .select()
@@ -83,7 +83,7 @@ export async function startGame(roomCode: string) {
 
 export async function sendAction(roomCode: string, action: GameAction) {
   const { data: row, error } = await supabase
-    .from("games")
+    .from("splendor_games")
     .select("*")
     .eq("room_code", roomCode.toUpperCase())
     .single();
@@ -99,7 +99,7 @@ export async function sendAction(roomCode: string, action: GameAction) {
   }
 
   const { data, error: updateError } = await supabase
-    .from("games")
+    .from("splendor_games")
     .update({ state: next })
     .eq("id", row.id)
     .select()
@@ -110,10 +110,10 @@ export async function sendAction(roomCode: string, action: GameAction) {
 
 export function subscribeToRoom(roomCode: string, onChange: (state: GameState) => void) {
   const channel = supabase
-    .channel(`room-${roomCode}`)
+    .channel(`splendor-room-${roomCode}`)
     .on(
       "postgres_changes",
-      { event: "UPDATE", schema: "public", table: "games", filter: `room_code=eq.${roomCode.toUpperCase()}` },
+      { event: "UPDATE", schema: "public", table: "splendor_games", filter: `room_code=eq.${roomCode.toUpperCase()}` },
       (payload) => {
         onChange(payload.new.state as GameState);
       }
@@ -126,7 +126,7 @@ export function subscribeToRoom(roomCode: string, onChange: (state: GameState) =
 
 export async function fetchRoom(roomCode: string) {
   const { data, error } = await supabase
-    .from("games")
+    .from("splendor_games")
     .select("*")
     .eq("room_code", roomCode.toUpperCase())
     .single();
